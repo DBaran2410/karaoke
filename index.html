@@ -3,21 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karaoke Song Selector</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Eurowizja - Wybór piosenek</title>
 </head>
 <body>
-    <header>
-        <h1>Karaoke Song Selector</h1>
-    </header>
+    <h1>Wybierz piosenkę z Eurowizji</h1>
+    
+    <input type="text" id="search" placeholder="Szukaj piosenki...">
+    <ul id="song-list"></ul>
 
-    <main>
-        <input type="text" id="search" placeholder="Search by title, artist, year, or country...">
-        <ul id="song-list">
-            <!-- Songs will be dynamically loaded here -->
-        </ul>
-    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchInput = document.getElementById("search");
+            const songList = document.getElementById("song-list");
 
-    <script src="script.js"></script>
+            // Funkcja do pobierania danych z pliku JSON na serwerze
+            async function fetchEurovisionSongs() {
+                try {
+                    const response = await fetch("ścieżka/do/pliku/eurovision_data.json");  // Zamień na ścieżkę do pliku na serwerze
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const songs = await response.json();  // Parsowanie odpowiedzi jako JSON
+                    displaySongs(songs);  // Wyświetlanie piosenek
+                } catch (error) {
+                    console.error("Błąd pobierania pliku JSON:", error);
+                    songList.innerHTML = "<li>Nie udało się pobrać danych z serwera.</li>";
+                }
+            }
+
+            // Funkcja do wyświetlania piosenek
+            function displaySongs(songs, filter = "") {
+                songList.innerHTML = "";  // Czyścimy listę
+
+                const filteredSongs = songs.filter(song => {
+                    const searchText = filter.toLowerCase();
+                    return (
+                        song.song.toLowerCase().includes(searchText) ||
+                        song.artist.toLowerCase().includes(searchText) ||
+                        song.year.toString().includes(searchText) ||
+                        song.country.toLowerCase().includes(searchText)
+                    );
+                });
+
+                if (filteredSongs.length === 0) {
+                    songList.innerHTML = "<li>Nie znaleziono piosenek</li>";
+                } else {
+                    filteredSongs.forEach(song => {
+                        const li = document.createElement("li");
+                        li.textContent = `${song.song} by ${song.artist} (${song.year}, ${song.country})`;
+                        songList.appendChild(li);
+                    });
+                }
+            }
+
+            // Nasłuchiwanie na wprowadzenie w polu wyszukiwania
+            searchInput.addEventListener("input", (e) => {
+                displaySongs(e.target.value);
+            });
+
+            // Załaduj piosenki po załadowaniu strony
+            fetchEurovisionSongs();
+        });
+    </script>
 </body>
 </html>
