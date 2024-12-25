@@ -19,7 +19,7 @@
             // Funkcja do pobierania danych z pliku JSON na serwerze
             async function fetchEurovisionSongs() {
                 try {
-                    const response = await fetch("ścieżka/do/pliku/eurovision_data.json");  // Zamień na ścieżkę do pliku na serwerze
+                    const response = await fetch("eurovision_data.json");  // Zamień na ścieżkę do pliku na serwerze
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
